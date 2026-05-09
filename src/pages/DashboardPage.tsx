@@ -15,10 +15,6 @@ function DashboardPage() {
                         Overview of your task management system
                     </p>
                 </div>
-
-                <div className="px-4 py-2 rounded-full bg-violet-100 text-violet-600 font-medium">
-                    📅 May 2025
-                </div>
             </div>
 
             <TaskStats />

@@ -1,21 +1,59 @@
-import { Button, Card, Popconfirm } from 'antd'
+import { Button, Card } from 'antd'
 
 import { useState } from 'react'
 
 import TaskFormModal from '../features/tasks/components/TaskFormModal'
 import TaskTable from '../features/tasks/components/TaskTable'
-
-import { mockTasks } from '../features/tasks/data/mockTasks'
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal'
 
 import type {
     Task,
     TaskFormValues,
 } from '../features/tasks/task.types'
 
-function TasksPage() {
-    const [tasks, setTasks] =
-        useState<Task[]>(mockTasks)
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../store/hooks'
 
+import {
+    addTask,
+    updateTask,
+    deleteTask,
+    deleteManyTasks,
+    updateTaskStatus,
+    setPage,
+} from '../store/slices/taskSlice'
+
+import {
+    selectFilteredTasks,
+    selectPaginatedTasks,
+} from '../store/selectors/taskSelectors'
+
+function TasksPage() {
+    const dispatch = useAppDispatch()
+
+    // selector
+    const tasks = useAppSelector(
+        selectPaginatedTasks
+    )
+
+    const currentPage = useAppSelector(
+        state => state.task.pagination.currentPage
+    )
+
+    const pageSize = useAppSelector(
+        state => state.task.pagination.pageSize
+    )
+
+    const filteredTasks = useAppSelector(
+        selectFilteredTasks
+    )
+
+
+    const total = filteredTasks.length
+
+    // local state
     const [selectedRowKeys, setSelectedRowKeys] =
         useState<React.Key[]>([])
 
@@ -24,54 +62,73 @@ function TasksPage() {
     const [editingTask, setEditingTask] =
         useState<Task | null>(null)
 
+    const [deleteModalOpen, setDeleteModalOpen] =
+        useState(false)
+
+    const [deleteIds, setDeleteIds] = useState<
+        string[]
+    >([])
+
+    // create
     const handleCreate = () => {
         setEditingTask(null)
+
         setOpen(true)
     }
 
+    // edit
     const handleEdit = (task: Task) => {
         setEditingTask(task)
+
         setOpen(true)
     }
 
-    const handleDelete = (id: number) => {
-        setTasks((prev) =>
-            prev.filter((task) => task.id !== id)
-        )
+    // delete modal
+    const openDeleteModal = (
+        ids: string[]
+    ) => {
+        setDeleteIds(ids)
 
-        // remove deleted row from selected rows
-        setSelectedRowKeys((prev) =>
-            prev.filter((key) => key !== id)
-        )
+        setDeleteModalOpen(true)
     }
 
-    const handleBulkDelete = () => {
-        setTasks((prev) =>
-            prev.filter(
-                (task) =>
-                    !selectedRowKeys.includes(task.id)
+    // confirm delete
+    const handleConfirmDelete = () => {
+        if (deleteIds.length === 1) {
+            dispatch(deleteTask(deleteIds[0]))
+
+            setSelectedRowKeys(prev =>
+                prev.filter(
+                    key => key !== deleteIds[0]
+                )
             )
-        )
+        }
 
-        setSelectedRowKeys([])
+        else {
+            dispatch(deleteManyTasks(deleteIds))
+
+            setSelectedRowKeys([])
+        }
+
+        setDeleteModalOpen(false)
+
+        setDeleteIds([])
     }
 
+    // change status
     const handleStatusChange = (
-        id: number,
+        id: string,
         status: Task['status']
     ) => {
-        setTasks((prev) =>
-            prev.map((task) =>
-                task.id === id
-                    ? {
-                        ...task,
-                        status,
-                    }
-                    : task
-            )
+        dispatch(
+            updateTaskStatus({
+                id,
+                status,
+            })
         )
     }
 
+    // submit form
     const handleSubmit = (
         values: TaskFormValues
     ) => {
@@ -86,35 +143,38 @@ function TasksPage() {
         }
 
         if (editingTask) {
-            setTasks((prev) =>
-                prev.map((task) =>
-                    task.id === editingTask.id
-                        ? {
-                            ...task,
-                            ...formattedValues,
-                        }
-                        : task
-                )
+            dispatch(
+                updateTask({
+                    ...editingTask,
+                    ...formattedValues,
+                })
             )
         }
 
         else {
-            setTasks((prev) => [
-                ...prev,
-                {
-                    id: Date.now(),
+            dispatch(
+                addTask({
+                    id: crypto.randomUUID(),
+
+                    createdAt:
+                        new Date().toISOString(),
+
                     ...formattedValues,
-                },
-            ])
+                })
+            )
         }
 
         setOpen(false)
+
         setEditingTask(null)
+
         setSelectedRowKeys([])
     }
 
+    // close modal
     const handleCloseModal = () => {
         setOpen(false)
+
         setEditingTask(null)
     }
 
@@ -132,25 +192,19 @@ function TasksPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <Popconfirm
-                        title="Delete selected tasks?"
-                        description={`Are you sure to delete ${selectedRowKeys.length} selected tasks?`}
-                        onConfirm={handleBulkDelete}
-                        okText="Delete"
-                        cancelText="Cancel"
+                    <Button
+                        danger
                         disabled={
                             !selectedRowKeys.length
                         }
+                        onClick={() =>
+                            openDeleteModal(
+                                selectedRowKeys as string[]
+                            )
+                        }
                     >
-                        <Button
-                            danger
-                            disabled={
-                                !selectedRowKeys.length
-                            }
-                        >
-                            Delete Selected
-                        </Button>
-                    </Popconfirm>
+                        Delete Selected
+                    </Button>
 
                     <Button
                         type="primary"
@@ -171,9 +225,17 @@ function TasksPage() {
                         setSelectedRowKeys
                     }
                     onEdit={handleEdit}
-                    onDelete={handleDelete}
+                    onDelete={(id) =>
+                        openDeleteModal([id])
+                    }
                     onStatusChange={
                         handleStatusChange
+                    }
+                    currentPage={currentPage}
+                    pageSize={pageSize}
+                    total={total}
+                    onPageChange={(page) =>
+                        dispatch(setPage(page))
                     }
                 />
             </Card>
@@ -183,6 +245,24 @@ function TasksPage() {
                 onCancel={handleCloseModal}
                 onSubmit={handleSubmit}
                 editingTask={editingTask}
+            />
+
+            <ConfirmDeleteModal
+                open={deleteModalOpen}
+                onCancel={() =>
+                    setDeleteModalOpen(false)
+                }
+                onConfirm={handleConfirmDelete}
+                title={
+                    deleteIds.length > 1
+                        ? 'Delete Selected Tasks'
+                        : 'Delete Task'
+                }
+                description={
+                    deleteIds.length > 1
+                        ? `Are you sure you want to delete ${deleteIds.length} selected tasks?`
+                        : 'Are you sure you want to delete this task?'
+                }
             />
         </div>
     )

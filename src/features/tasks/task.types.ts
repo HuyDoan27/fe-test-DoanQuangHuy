@@ -11,7 +11,7 @@ export type TaskPriority =
     | 'low'
 
 export interface Task {
-    id: number
+    id: string
 
     title: string
 
@@ -25,13 +25,11 @@ export interface Task {
 
     dueDate?: string
 
+    createdAt: string
+
     tags?: string[]
 }
 
-/**
- * Values used inside Antd Form
- * DatePicker returns Dayjs, not string
- */
 export interface TaskFormValues {
     title: string
 

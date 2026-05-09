@@ -1,12 +1,21 @@
 import {
     Button,
-    Popconfirm,
     Select,
     Space,
     Table,
+    Avatar,
 } from 'antd'
 
+import {
+    DeleteOutlined,
+    EditOutlined,
+    UserOutlined,
+    CalendarOutlined,
+} from '@ant-design/icons'
+
 import type { ColumnsType } from 'antd/es/table'
+
+import dayjs from 'dayjs'
 
 import TaskPriorityTag from './TaskPriorityTag'
 import TaskStatusTag from './TaskStatusTag'
@@ -18,14 +27,24 @@ interface Props {
 
     selectedRowKeys: React.Key[]
 
-    onSelectChange: (keys: React.Key[]) => void
+    currentPage: number
+
+    pageSize: number
+
+    total: number
+
+    onPageChange: (page: number) => void
+
+    onSelectChange: (
+        keys: React.Key[]
+    ) => void
 
     onEdit: (task: Task) => void
 
-    onDelete: (id: number) => void
+    onDelete: (id: string) => void
 
     onStatusChange: (
-        id: number,
+        id: string,
         status: Task['status']
     ) => void
 }
@@ -33,6 +52,10 @@ interface Props {
 function TaskTable({
     tasks,
     selectedRowKeys,
+    currentPage,
+    pageSize,
+    total,
+    onPageChange,
     onSelectChange,
     onEdit,
     onDelete,
@@ -40,28 +63,53 @@ function TaskTable({
 }: Props) {
     const columns: ColumnsType<Task> = [
         {
-            title: 'Title',
+            title: 'Task',
+
             dataIndex: 'title',
 
             sorter: (a, b) =>
-                a.title.localeCompare(b.title),
+                a.title.localeCompare(
+                    b.title
+                ),
+
+            render: (_, record) => (
+                <div>
+                    <div className="font-semibold text-slate-800">
+                        {record.title}
+                    </div>
+
+                    {record.description && (
+                        <p className="text-sm text-slate-400 mt-1 line-clamp-1">
+                            {
+                                record.description
+                            }
+                        </p>
+                    )}
+                </div>
+            ),
         },
 
         {
             title: 'Status',
 
+            width: 180,
+
             render: (_, record) => (
                 <Select
                     value={record.status}
-                    style={{ width: 150 }}
+                    className="w-full"
                     onChange={(value) =>
-                        onStatusChange(record.id, value)
+                        onStatusChange(
+                            record.id,
+                            value
+                        )
                     }
                     options={[
                         {
                             label: (
                                 <TaskStatusTag status="todo" />
                             ),
+
                             value: 'todo',
                         },
 
@@ -69,6 +117,7 @@ function TaskTable({
                             label: (
                                 <TaskStatusTag status="in_progress" />
                             ),
+
                             value: 'in_progress',
                         },
 
@@ -76,6 +125,7 @@ function TaskTable({
                             label: (
                                 <TaskStatusTag status="done" />
                             ),
+
                             value: 'done',
                         },
                     ]}
@@ -85,7 +135,10 @@ function TaskTable({
 
         {
             title: 'Priority',
+
             dataIndex: 'priority',
+
+            width: 140,
 
             sorter: (a, b) =>
                 a.priority.localeCompare(
@@ -93,46 +146,100 @@ function TaskTable({
                 ),
 
             render: (priority) => (
-                <TaskPriorityTag priority={priority} />
+                <TaskPriorityTag
+                    priority={priority}
+                />
             ),
         },
 
         {
             title: 'Assignee',
+
             dataIndex: 'assignee',
+
+            width: 180,
+
+            render: (assignee) => (
+                <div className="flex items-center gap-2">
+                    <Avatar
+                        size="small"
+                        icon={<UserOutlined />}
+                    />
+
+                    <span className="text-slate-600">
+                        {assignee ||
+                            'Unassigned'}
+                    </span>
+                </div>
+            ),
         },
 
         {
             title: 'Due Date',
+
             dataIndex: 'dueDate',
 
+            width: 170,
+
             sorter: (a, b) =>
-                new Date(a.dueDate || '').getTime() -
-                new Date(b.dueDate || '').getTime(),
+                new Date(
+                    a.dueDate || ''
+                ).getTime() -
+                new Date(
+                    b.dueDate || ''
+                ).getTime(),
+
+            render: (dueDate) => (
+                <div className="flex items-center gap-2 text-slate-500">
+                    <CalendarOutlined />
+
+                    <span>
+                        {dueDate
+                            ? dayjs(
+                                  dueDate
+                              ).format(
+                                  'DD MMM YYYY'
+                              )
+                            : '-'}
+                    </span>
+                </div>
+            ),
         },
 
         {
             title: 'Actions',
 
-            render: (_, record) => (
-                <Space>
-                    <Button
-                        type="link"
-                        onClick={() => onEdit(record)}
-                    >
-                        Edit
-                    </Button>
+            width: 120,
 
-                    <Popconfirm
-                        title="Delete task?"
-                        onConfirm={() =>
+            align: 'center',
+
+            render: (_, record) => (
+                <Space size="small">
+                    <Button
+                        type="text"
+                        icon={<EditOutlined />}
+                        className="
+                            hover:!bg-blue-50
+                            hover:!text-blue-500
+                        "
+                        onClick={() =>
+                            onEdit(record)
+                        }
+                    />
+
+                    <Button
+                        danger
+                        type="text"
+                        icon={
+                            <DeleteOutlined />
+                        }
+                        className="
+                            hover:!bg-red-50
+                        "
+                        onClick={() =>
                             onDelete(record.id)
                         }
-                    >
-                        <Button danger type="link">
-                            Delete
-                        </Button>
-                    </Popconfirm>
+                    />
                 </Space>
             ),
         },
@@ -145,10 +252,19 @@ function TaskTable({
             dataSource={tasks}
             rowSelection={{
                 selectedRowKeys,
+
                 onChange: onSelectChange,
             }}
             pagination={{
-                pageSize: 10,
+                current: currentPage,
+
+                pageSize,
+
+                total,
+
+                onChange: onPageChange,
+
+                showSizeChanger: false,
 
                 showTotal: (total) =>
                     `Total ${total} tasks`,
