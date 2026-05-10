@@ -1,17 +1,13 @@
 import {
-    BarChartOutlined,
     CheckSquareOutlined,
-    FolderOpenOutlined,
-    InboxOutlined,
     LayoutOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
-    PlusOutlined,
     SettingOutlined,
-    TeamOutlined,
+    UserOutlined,
 } from '@ant-design/icons'
-import { Button, Layout, Menu } from 'antd'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { Avatar, Button, Layout, Menu, Tooltip } from 'antd'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const { Sider } = Layout
 
@@ -31,44 +27,6 @@ const menuItems = [
         icon: <CheckSquareOutlined />,
         label: 'Tasks',
     },
-    {
-        key: '/inbox',
-        icon: <InboxOutlined />,
-        label: 'Inbox',
-    },
-    {
-        key: '/teams',
-        icon: <TeamOutlined />,
-        label: 'Teams',
-    },
-    {
-        key: '/analytics',
-        icon: <BarChartOutlined />,
-        label: 'Analytics',
-    },
-    {
-        key: '/settings',
-        icon: <SettingOutlined />,
-        label: 'Settings',
-    },
-]
-
-const projectItems = [
-    {
-        key: 'project-1',
-        icon: <FolderOpenOutlined />,
-        label: 'Main Project',
-    },
-    {
-        key: 'project-2',
-        icon: <FolderOpenOutlined />,
-        label: 'Landing Page Pro...',
-    },
-    {
-        key: 'project-3',
-        icon: <FolderOpenOutlined />,
-        label: 'Yellow Branding',
-    },
 ]
 
 function Sidebar({ collapsed, onToggle }: SidebarProps) {
@@ -78,100 +36,108 @@ function Sidebar({ collapsed, onToggle }: SidebarProps) {
     return (
         <Sider
             collapsed={collapsed}
-            width={240}
-            collapsedWidth={72}
+            width={220}
+            collapsedWidth={64}
             theme="dark"
             style={{
                 minHeight: '100vh',
                 background: '#1A1A2E',
                 position: 'relative',
+                borderRight: '1px solid rgba(255,255,255,0.06)',
+                display: 'flex',
+                flexDirection: 'column',
             }}
         >
             {/* Logo */}
             <div
-                className="flex items-center gap-3 px-5 h-[72px]"
-                style={{
-                    borderBottom: '1px solid rgba(255,255,255,0.08)',
-                }}
+                className="flex items-center gap-3 px-4 h-[64px] shrink-0"
+                style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}
             >
-                <div className="w-8 h-8 rounded-lg bg-[#7C6FE0] flex items-center justify-center text-white font-bold">
+                <div
+                    className="w-7 h-7 rounded-md flex items-center justify-center text-white text-sm font-bold shrink-0"
+                    style={{
+                        background: 'linear-gradient(135deg, #7C6FE0, #A78BFA)',
+                    }}
+                >
                     T
                 </div>
-
                 {!collapsed && (
-                    <span className="text-white font-semibold text-[15px]">
+                    <span className="text-white font-semibold text-sm tracking-wide">
                         TaskBoard
                     </span>
                 )}
             </div>
 
-            {/* Add button */}
-            <div className="p-4">
-                <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    block={!collapsed}
-                    shape={collapsed ? 'circle' : 'default'}
-                    style={{
-                        background: '#7C6FE0',
-                        borderColor: '#7C6FE0',
-                    }}
-                >
-                    {!collapsed && 'Add New'}
-                </Button>
+            {/* Menu */}
+            <div className="flex-1 py-3">
+                <Menu
+                    theme="dark"
+                    mode="inline"
+                    selectedKeys={[location.pathname]}
+                    items={menuItems}
+                    onClick={({ key }) => navigate(key)}
+                    style={{ background: 'transparent', border: 'none' }}
+                />
             </div>
 
-            {/* Main menu */}
-            <Menu
-                theme="dark"
-                mode="inline"
-                selectedKeys={[location.pathname]}
-                items={menuItems}
-                onClick={({ key }) => navigate(key)}
-                style={{
-                    background: '#1A1A2E',
-                    border: 'none',
-                }}
-            />
-
-            {/* Projects */}
-            {!collapsed && (
-                <>
-                    <div className="px-6 pt-6 pb-2 text-[11px] uppercase tracking-widest text-white/30">
-                        Projects
+            {/* Footer */}
+            <div
+                className="shrink-0 px-3 py-3"
+                style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
+            >
+                {!collapsed ? (
+                    <div className="flex items-center gap-3 px-2 py-2 rounded-lg"
+                        style={{ background: 'rgba(255,255,255,0.04)' }}
+                    >
+                        <Avatar
+                            size={28}
+                            icon={<UserOutlined />}
+                            style={{ background: '#7C6FE0'}}
+                        />
+                        <div className="flex-1 min-w-0">
+                            <div className="text-white text-xs font-medium truncate">Doan Quang Huy</div>
+                            <div className="text-[11px] truncate" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                                Admin
+                            </div>
+                        </div>
+                        <Tooltip title="Settings" placement="top">
+                            <SettingOutlined
+                                style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14, cursor: 'pointer' }}
+                            />
+                        </Tooltip>
                     </div>
-
-                    <Menu
-                        theme="dark"
-                        mode="inline"
-                        items={projectItems}
-                        style={{
-                            background: '#1A1A2E',
-                            border: 'none',
-                        }}
-                    />
-                </>
-            )}
+                ) : (
+                    <div className="flex justify-center">
+                        <Tooltip title="Doan Quang Huy" placement="right">
+                            <Avatar
+                                size={28}
+                                icon={<UserOutlined />}
+                                style={{ background: '#7C6FE0', cursor: 'pointer' }}
+                            />
+                        </Tooltip>
+                    </div>
+                )}
+            </div>
 
             {/* Toggle */}
             <Button
                 type="primary"
                 shape="circle"
-                icon={
-                    collapsed ? (
-                        <MenuUnfoldOutlined />
-                    ) : (
-                        <MenuFoldOutlined />
-                    )
-                }
+                size="small"
+                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                 onClick={onToggle}
                 style={{
                     position: 'absolute',
-                    right: -14,
+                    right: -12,
                     top: '50%',
                     transform: 'translateY(-50%)',
                     background: '#7C6FE0',
                     borderColor: '#7C6FE0',
+                    zIndex: 10,
+                    width: 24,
+                    height: 24,
+                    minWidth: 24,
+                    fontSize: 10,
                 }}
             />
         </Sider>

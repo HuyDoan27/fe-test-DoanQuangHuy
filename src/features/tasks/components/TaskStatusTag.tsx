@@ -1,5 +1,5 @@
 import { Tag } from 'antd'
-import type { TaskStatus } from '../task.types'
+import type { TaskStatus } from '../../../types/task.types'
 
 interface Props {
     status: TaskStatus

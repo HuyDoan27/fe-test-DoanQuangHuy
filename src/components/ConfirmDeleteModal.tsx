@@ -1,6 +1,4 @@
-import {
-    ExclamationCircleFilled,
-} from '@ant-design/icons'
+import { ExclamationCircleFilled} from '@ant-design/icons'
 
 import { Button, Modal } from 'antd'
 

@@ -1,4 +1,4 @@
-import type { Task } from '../task.types'
+import type { Task } from '../../../types/task.types'
 
 export const mockTasks: Task[] = [
     {
@@ -8,8 +8,8 @@ export const mockTasks: Task[] = [
         status: 'todo',
         priority: 'high',
         assignee: 'Alice',
-        dueDate: '2026-05-20',
-        createdAt: '2026-05-01T08:30:00Z',
+        dueDate: '2026-04-20',
+        createdAt: '2026-04-01T08:30:00Z',
         tags: ['design'],
     },
 
@@ -20,8 +20,8 @@ export const mockTasks: Task[] = [
         status: 'in_progress',
         priority: 'medium',
         assignee: 'Bob',
-        dueDate: '2026-05-24',
-        createdAt: '2026-05-02T10:15:00Z',
+        dueDate: '2026-04-24',
+        createdAt: '2026-04-02T10:15:00Z',
         tags: ['backend'],
     },
 
@@ -32,8 +32,8 @@ export const mockTasks: Task[] = [
         status: 'done',
         priority: 'low',
         assignee: 'Carol',
-        dueDate: '2026-05-18',
-        createdAt: '2026-05-03T09:00:00Z',
+        dueDate: '2026-04-18',
+        createdAt: '2026-04-03T09:00:00Z',
         tags: ['frontend'],
     },
 
@@ -44,8 +44,8 @@ export const mockTasks: Task[] = [
         status: 'in_progress',
         priority: 'high',
         assignee: 'David',
-        dueDate: '2026-05-25',
-        createdAt: '2026-05-04T14:20:00Z',
+        dueDate: '2026-04-25',
+        createdAt: '2026-04-04T14:20:00Z',
         tags: ['ui'],
     },
 
@@ -56,8 +56,8 @@ export const mockTasks: Task[] = [
         status: 'todo',
         priority: 'medium',
         assignee: 'Emma',
-        dueDate: '2026-05-28',
-        createdAt: '2026-05-05T11:45:00Z',
+        dueDate: '2026-04-28',
+        createdAt: '2026-04-04T11:45:00Z',
         tags: ['backend'],
     },
 
@@ -68,8 +68,8 @@ export const mockTasks: Task[] = [
         status: 'done',
         priority: 'low',
         assignee: 'Frank',
-        dueDate: '2026-05-15',
-        createdAt: '2026-05-06T13:10:00Z',
+        dueDate: '2026-04-15',
+        createdAt: '2026-04-06T13:10:00Z',
         tags: ['testing'],
     },
 
@@ -80,8 +80,8 @@ export const mockTasks: Task[] = [
         status: 'todo',
         priority: 'high',
         assignee: 'Grace',
-        dueDate: '2026-05-30',
-        createdAt: '2026-05-07T15:00:00Z',
+        dueDate: '2026-04-30',
+        createdAt: '2026-04-07T15:00:00Z',
         tags: ['devops'],
     },
 
@@ -92,8 +92,8 @@ export const mockTasks: Task[] = [
         status: 'in_progress',
         priority: 'medium',
         assignee: 'Henry',
-        dueDate: '2026-05-22',
-        createdAt: '2026-05-08T09:30:00Z',
+        dueDate: '2026-04-22',
+        createdAt: '2026-04-08T09:30:00Z',
         tags: ['frontend'],
     },
 
@@ -104,8 +104,8 @@ export const mockTasks: Task[] = [
         status: 'done',
         priority: 'medium',
         assignee: 'Ivy',
-        dueDate: '2026-05-17',
-        createdAt: '2026-05-09T08:00:00Z',
+        dueDate: '2026-04-17',
+        createdAt: '2026-04-09T08:00:00Z',
         tags: ['redux'],
     },
 
@@ -117,7 +117,7 @@ export const mockTasks: Task[] = [
         priority: 'low',
         assignee: 'Jack',
         dueDate: '2026-06-01',
-        createdAt: '2026-05-10T16:40:00Z',
+        createdAt: '2026-04-10T16:40:00Z',
         tags: ['research'],
     },
 
@@ -128,8 +128,8 @@ export const mockTasks: Task[] = [
         status: 'in_progress',
         priority: 'medium',
         assignee: 'Kate',
-        dueDate: '2026-05-29',
-        createdAt: '2026-05-11T10:50:00Z',
+        dueDate: '2026-04-29',
+        createdAt: '2026-04-11T10:50:00Z',
         tags: ['ui'],
     },
 
@@ -140,8 +140,8 @@ export const mockTasks: Task[] = [
         status: 'done',
         priority: 'low',
         assignee: 'Leo',
-        dueDate: '2026-05-14',
-        createdAt: '2026-05-12T09:15:00Z',
+        dueDate: '2026-04-14',
+        createdAt: '2026-04-12T09:15:00Z',
         tags: ['component'],
     },
 
@@ -152,8 +152,8 @@ export const mockTasks: Task[] = [
         status: 'todo',
         priority: 'high',
         assignee: 'Mia',
-        dueDate: '2026-05-31',
-        createdAt: '2026-05-13T12:20:00Z',
+        dueDate: '2026-04-31',
+        createdAt: '2026-04-13T12:20:00Z',
         tags: ['mobile'],
     },
 
@@ -164,8 +164,8 @@ export const mockTasks: Task[] = [
         status: 'done',
         priority: 'medium',
         assignee: 'Nathan',
-        dueDate: '2026-05-13',
-        createdAt: '2026-05-14T11:00:00Z',
+        dueDate: '2026-04-13',
+        createdAt: '2026-04-14T11:00:00Z',
         tags: ['auth'],
     },
 
@@ -176,8 +176,8 @@ export const mockTasks: Task[] = [
         status: 'in_progress',
         priority: 'high',
         assignee: 'Olivia',
-        dueDate: '2026-05-27',
-        createdAt: '2026-05-15T14:30:00Z',
+        dueDate: '2026-04-27',
+        createdAt: '2026-04-15T14:30:00Z',
         tags: ['notification'],
     },
 
@@ -188,8 +188,8 @@ export const mockTasks: Task[] = [
         status: 'todo',
         priority: 'low',
         assignee: 'Paul',
-        dueDate: '2026-05-23',
-        createdAt: '2026-05-16T09:45:00Z',
+        dueDate: '2026-04-23',
+        createdAt: '2026-04-16T09:45:00Z',
         tags: ['scrum'],
     },
 
@@ -200,8 +200,8 @@ export const mockTasks: Task[] = [
         status: 'todo',
         priority: 'medium',
         assignee: 'Queen',
-        dueDate: '2026-05-16',
-        createdAt: '2026-05-17T13:00:00Z',
+        dueDate: '2026-04-16',
+        createdAt: '2026-04-17T13:00:00Z',
         tags: ['analytics'],
     },
 
@@ -212,8 +212,8 @@ export const mockTasks: Task[] = [
         status: 'in_progress',
         priority: 'high',
         assignee: 'Ryan',
-        dueDate: '2026-05-26',
-        createdAt: '2026-05-18T15:10:00Z',
+        dueDate: '2026-04-26',
+        createdAt: '2026-04-18T15:10:00Z',
         tags: ['deployment'],
     },
 
@@ -225,7 +225,7 @@ export const mockTasks: Task[] = [
         priority: 'low',
         assignee: 'Sophia',
         dueDate: '2026-06-02',
-        createdAt: '2026-05-19T10:25:00Z',
+        createdAt: '2026-04-19T10:25:00Z',
         tags: ['ux'],
     },
 
@@ -236,8 +236,8 @@ export const mockTasks: Task[] = [
         status: 'done',
         priority: 'medium',
         assignee: 'Tom',
-        dueDate: '2026-05-12',
-        createdAt: '2026-05-20T08:40:00Z',
+        dueDate: '2026-04-12',
+        createdAt: '2026-04-20T08:40:00Z',
         tags: ['documentation'],
     },
 ]

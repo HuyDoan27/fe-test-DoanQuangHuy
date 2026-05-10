@@ -1,27 +1,8 @@
-import {
-    DatePicker,
-    Form,
-    Input,
-    Modal,
-    Radio,
-    Select,
-    Row,
-    Col,
-} from 'antd'
-
+import { DatePicker, Form, Input, Modal, Radio, Select, Row, Col} from 'antd'
 import { useEffect } from 'react'
-
 import dayjs from 'dayjs'
-
-import {
-    PRIORITY_OPTIONS,
-    STATUS_OPTIONS,
-} from '../task.constants'
-
-import type {
-    Task,
-    TaskFormValues,
-} from '../task.types'
+import { PRIORITY_OPTIONS, STATUS_OPTIONS} from '../constant/task.constants'
+import type { Task, TaskFormValues} from '../../../types/task.types'
 
 const { TextArea } = Input
 
