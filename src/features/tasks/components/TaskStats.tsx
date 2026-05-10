@@ -1,19 +1,6 @@
-import {
-    Card,
-    Col,
-    Row,
-    Statistic,
-} from 'antd'
-
-import {
-    CheckCircleOutlined,
-    ClockCircleOutlined,
-    FileTextOutlined,
-    SyncOutlined,
-} from '@ant-design/icons'
-
+import { Card, Col, Row} from 'antd'
+import { CheckCircleOutlined, ClockCircleOutlined, FileTextOutlined, SyncOutlined} from '@ant-design/icons'
 import { useAppSelector } from '../../../store/hooks'
-
 import { selectTaskStats } from '../../../store/selectors/taskSelectors'
 
 function TaskStats() {

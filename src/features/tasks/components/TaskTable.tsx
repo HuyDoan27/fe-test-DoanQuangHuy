@@ -1,26 +1,10 @@
-import {
-    Button,
-    Select,
-    Space,
-    Table,
-    Avatar,
-} from 'antd'
-
-import {
-    DeleteOutlined,
-    EditOutlined,
-    UserOutlined,
-    CalendarOutlined,
-} from '@ant-design/icons'
-
+import { Avatar, Button, Select, Space, Table,} from 'antd'
+import { CalendarOutlined, DeleteOutlined, EditOutlined, UserOutlined} from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
-
-import dayjs from 'dayjs'
-
 import TaskPriorityTag from './TaskPriorityTag'
 import TaskStatusTag from './TaskStatusTag'
-
-import type { Task } from '../task.types'
+import formatDate from '../../../utils/formatDate'
+import type { Task } from '../../../types/task.types'
 
 interface Props {
     tasks: Task[]
@@ -194,13 +178,7 @@ function TaskTable({
                     <CalendarOutlined />
 
                     <span>
-                        {dueDate
-                            ? dayjs(
-                                  dueDate
-                              ).format(
-                                  'DD MMM YYYY'
-                              )
-                            : '-'}
+                        {formatDate(dueDate)}
                     </span>
                 </div>
             ),

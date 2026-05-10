@@ -1,5 +1,5 @@
 import { Tag } from 'antd'
-import type { TaskPriority } from '../task.types'
+import type { TaskPriority } from '../../../types/task.types'
 
 interface Props {
     priority: TaskPriority

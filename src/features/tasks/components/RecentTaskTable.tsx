@@ -1,17 +1,10 @@
-import { Card, Avatar } from 'antd'
-
-import {
-    UserOutlined,
-    CalendarOutlined,
-} from '@ant-design/icons'
-
-import dayjs from 'dayjs'
-
+import { Avatar, Card } from 'antd'
+import { CalendarOutlined, UserOutlined, } from '@ant-design/icons'
 import TaskStatusTag from './TaskStatusTag'
-
 import { useAppSelector } from '../../../store/hooks'
-
 import { selectAllTasks } from '../../../store/selectors/taskSelectors'
+import formatDate from '../../../utils/formatDate'
+import getInitials from '../../../utils/getInitials'
 
 function RecentTaskTable() {
     const tasks = useAppSelector(
@@ -58,16 +51,17 @@ function RecentTaskTable() {
                             p-2
                             transition-all
                             hover:border-violet-200
-                            hover:shadow-sm
-                        "
+                            hover:shadow-sm"
                     >
                         <Avatar
                             size={48}
-                            className="!bg-violet-100 !text-violet-600 !font-semibold shrink-0"
+                            className="
+                            !bg-violet-100
+                            !text-violet-600
+                            !font-semibold
+                            shrink-0 "
                         >
-                            {task.title
-                                .slice(0, 2)
-                                .toUpperCase()}
+                            {getInitials(task.assignee)}
                         </Avatar>
 
                         {/* Content */}
@@ -78,8 +72,7 @@ function RecentTaskTable() {
                                         className="
                                             font-semibold
                                             text-slate-800
-                                            truncate
-                                        "
+                                            truncate"
                                     >
                                         {task.title}
                                     </h3>
@@ -90,8 +83,7 @@ function RecentTaskTable() {
                                                 text-sm
                                                 text-slate-400
                                                 mt-1
-                                                line-clamp-1
-                                            "
+                                                line-clamp-1"
                                         >
                                             {
                                                 task.description
@@ -100,11 +92,7 @@ function RecentTaskTable() {
                                     )}
                                 </div>
 
-                                <TaskStatusTag
-                                    status={
-                                        task.status
-                                    }
-                                />
+                                <TaskStatusTag status={task.status} />
                             </div>
 
                             <div
@@ -117,9 +105,14 @@ function RecentTaskTable() {
                                 <div className="flex items-center gap-1">
                                     <UserOutlined />
 
-                                    <span>
-                                        {task.assignee ||
-                                            'Unassigned'}
+                                    <span
+                                        className={
+                                            task.assignee
+                                                ? 'text-slate-600'
+                                                : 'text-red-500 font-medium'
+                                        }
+                                    >
+                                        {task.assignee || 'Unassigned'}
                                     </span>
                                 </div>
 
@@ -127,13 +120,7 @@ function RecentTaskTable() {
                                     <CalendarOutlined />
 
                                     <span>
-                                        {task.dueDate
-                                            ? dayjs(
-                                                  task.dueDate
-                                              ).format(
-                                                  'DD MMM YYYY'
-                                              )
-                                            : '-'}
+                                        {formatDate(task.dueDate)}
                                     </span>
                                 </div>
                             </div>

@@ -1,73 +1,63 @@
-import { Button, Card } from 'antd'
-
-import { useState } from 'react'
-
+import { Button, Card, Col, DatePicker, Input, Row, Select } from 'antd'
+import { DeleteOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons'
+import { useEffect, useState } from 'react'
+import dayjs from 'dayjs'
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal'
 import TaskFormModal from '../features/tasks/components/TaskFormModal'
 import TaskTable from '../features/tasks/components/TaskTable'
-import ConfirmDeleteModal from '../components/ConfirmDeleteModal'
+import type { Task, TaskFormValues, } from '../types/task.types'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import useDebounce from '../store/hooks'
+import { addTask, deleteManyTasks, deleteTask, resetFilters, setFilter, setPage, updateTask, updateTaskStatus } from '../store/slices/tasksSlice'
+import { selectFilteredTasks, selectPaginatedTasks } from '../store/selectors/taskSelectors'
 
-import type {
-    Task,
-    TaskFormValues,
-} from '../features/tasks/task.types'
-
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../store/hooks'
-
-import {
-    addTask,
-    updateTask,
-    deleteTask,
-    deleteManyTasks,
-    updateTaskStatus,
-    setPage,
-} from '../store/slices/taskSlice'
-
-import {
-    selectFilteredTasks,
-    selectPaginatedTasks,
-} from '../store/selectors/taskSelectors'
+const { RangePicker } = DatePicker
 
 function TasksPage() {
     const dispatch = useAppDispatch()
 
-    // selector
-    const tasks = useAppSelector(
-        selectPaginatedTasks
+    // selectors
+    const tasks = useAppSelector(selectPaginatedTasks)
+
+    const filteredTasks = useAppSelector(selectFilteredTasks)
+
+    const filters = useAppSelector(
+        state => state.task.filters
     )
 
-    const currentPage = useAppSelector(
-        state => state.task.pagination.currentPage
-    )
+    const currentPage = useAppSelector(state => state.task.pagination.currentPage)
 
-    const pageSize = useAppSelector(
-        state => state.task.pagination.pageSize
-    )
-
-    const filteredTasks = useAppSelector(
-        selectFilteredTasks
-    )
-
+    const pageSize = useAppSelector(state => state.task.pagination.pageSize)
 
     const total = filteredTasks.length
 
+    // debounce search
+    const [searchValue, setSearchValue] =
+        useState(filters.searchText)
+
+    const debouncedSearch =
+        useDebounce(searchValue, 300)
+
+    useEffect(() => {
+        dispatch(
+            setFilter({
+                searchText: debouncedSearch,
+            })
+        )
+
+        dispatch(setPage(1))
+    }, [debouncedSearch, dispatch])
+
     // local state
-    const [selectedRowKeys, setSelectedRowKeys] =
-        useState<React.Key[]>([])
+    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
 
     const [open, setOpen] = useState(false)
 
-    const [editingTask, setEditingTask] =
-        useState<Task | null>(null)
+    const [editingTask, setEditingTask] = useState<Task | null>(null)
 
-    const [deleteModalOpen, setDeleteModalOpen] =
-        useState(false)
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false)
 
-    const [deleteIds, setDeleteIds] = useState<
-        string[]
-    >([])
+    const [deleteIds, setDeleteIds] = useState<string[]>([])
 
     // create
     const handleCreate = () => {
@@ -102,9 +92,7 @@ function TasksPage() {
                     key => key !== deleteIds[0]
                 )
             )
-        }
-
-        else {
+        } else {
             dispatch(deleteManyTasks(deleteIds))
 
             setSelectedRowKeys([])
@@ -149,9 +137,7 @@ function TasksPage() {
                     ...formattedValues,
                 })
             )
-        }
-
-        else {
+        } else {
             dispatch(
                 addTask({
                     id: crypto.randomUUID(),
@@ -179,11 +165,12 @@ function TasksPage() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-3">
+            {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-4xl font-bold text-slate-900">
-                        Tasks
+                        Tasks List
                     </h1>
 
                     <p className="text-slate-500 mt-1">
@@ -194,6 +181,7 @@ function TasksPage() {
                 <div className="flex items-center gap-3">
                     <Button
                         danger
+                        icon={<DeleteOutlined />}
                         disabled={
                             !selectedRowKeys.length
                         }
@@ -208,6 +196,7 @@ function TasksPage() {
 
                     <Button
                         type="primary"
+                        icon={<PlusOutlined />}
                         onClick={handleCreate}
                     >
                         Add Task
@@ -215,7 +204,160 @@ function TasksPage() {
                 </div>
             </div>
 
-            <Card className="rounded-2xl border-0 shadow-sm">
+            {/* Filters */}
+            <Card className="shadow-sm">
+                <Row gutter={[16, 16]}>
+                    {/* Search */}
+                    <Col xs={24} md={12} xl={7}>
+                        <Input.Search
+                            allowClear
+                            placeholder="Search by title..."
+                            prefix={<SearchOutlined />}
+                            value={searchValue}
+                            onChange={(e) =>
+                                setSearchValue(
+                                    e.target.value
+                                )
+                            }
+                        />
+                    </Col>
+
+                    {/* Status */}
+                    <Col xs={24} md={12} xl={6}>
+                        <Select
+                            mode="multiple"
+                            allowClear
+                            className="w-full"
+                            placeholder="Filter by status"
+                            value={filters.status}
+                            onChange={(value) => {
+                                dispatch(
+                                    setFilter({
+                                        status: value,
+                                    })
+                                )
+
+                                dispatch(setPage(1))
+                            }}
+                            options={[
+                                {
+                                    label: 'Todo',
+                                    value: 'todo',
+                                },
+
+                                {
+                                    label: 'In Progress',
+                                    value: 'in_progress',
+                                },
+
+                                {
+                                    label: 'Done',
+                                    value: 'done',
+                                },
+                            ]}
+                        />
+                    </Col>
+
+                    {/* Priority */}
+                    <Col xs={24} md={12} xl={4}>
+                        <Select
+                            allowClear
+                            className="w-full"
+                            placeholder="Filter by priority"
+                            value={
+                                filters.priority ||
+                                undefined
+                            }
+                            onChange={(value) => {
+                                dispatch(
+                                    setFilter({
+                                        priority:
+                                            value || '',
+                                    })
+                                )
+
+                                dispatch(setPage(1))
+                            }}
+                            options={[
+                                {
+                                    label: 'High',
+                                    value: 'high',
+                                },
+
+                                {
+                                    label: 'Medium',
+                                    value: 'medium',
+                                },
+
+                                {
+                                    label: 'Low',
+                                    value: 'low',
+                                },
+                            ]}
+                        />
+                    </Col>
+
+                    {/* Date Range */}
+                    <Col xs={24} md={12} xl={5}>
+                        <RangePicker
+                            className="w-full"
+                            value={
+                                filters.dateRange
+                                    ? [
+                                        dayjs(
+                                            filters
+                                                .dateRange[0]
+                                        ),
+                                        dayjs(
+                                            filters
+                                                .dateRange[1]
+                                        ),
+                                    ]
+                                    : null
+                            }
+                            onChange={(dates) => {
+                                dispatch(
+                                    setFilter({
+                                        dateRange: dates
+                                            ? [
+                                                dates[0]?.format(
+                                                    'YYYY-MM-DD'
+                                                ) || '',
+                                                dates[1]?.format(
+                                                    'YYYY-MM-DD'
+                                                ) || '',
+                                            ]
+                                            : null,
+                                    })
+                                )
+
+                                dispatch(setPage(1))
+                            }}
+                        />
+                    </Col>
+
+                    {/* Reset */}
+                    <Col xs={24} md={12} xl={2} className="flex justify-end">
+                        <Button
+                            icon={<ReloadOutlined />}
+                            onClick={() => {
+                                dispatch(
+                                    resetFilters()
+                                )
+
+                                dispatch(setPage(1))
+
+                                setSearchValue('')
+                            }}
+                        >
+                            Reset Filters
+                        </Button>
+                    </Col>
+                </Row>
+            </Card>
+
+            {/* Table */}
+            <Card className=" border-0 shadow-sm">
                 <TaskTable
                     tasks={tasks}
                     selectedRowKeys={
@@ -240,6 +382,7 @@ function TasksPage() {
                 />
             </Card>
 
+            {/* Form Modal */}
             <TaskFormModal
                 open={open}
                 onCancel={handleCloseModal}
@@ -247,6 +390,7 @@ function TasksPage() {
                 editingTask={editingTask}
             />
 
+            {/* Delete Modal */}
             <ConfirmDeleteModal
                 open={deleteModalOpen}
                 onCancel={() =>
